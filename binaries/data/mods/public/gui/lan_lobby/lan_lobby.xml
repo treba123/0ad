@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<objects>
+	<script file="gui/common/network.js"/>
+	<script file="gui/gamesetup/gamesetup_mp.js"/>
+	<script file="gui/common/functions_global_object.js"/>
+	<script file="gui/common/functions_utility.js"/>
+	<script file="gui/lan_lobby/lan_lobby.js"/>
+	
+
+	<!-- Add a translucent black background to fade out the menu page -->
+	<object type="image" sprite="ModernFade"/>
+
+	<object name="dialog" type="image" style="ModernDialog" size="50%-400 50%-300 50%+400 50%+300">
+
+		<action on="Tick">
+			getLanGames();
+			onTick();
+		</action>
+
+		<!--<object name="pageConnecting" hidden="true">
+			<object name="connectionStatus" type="text" text_align="center" size="0 100 100% 120">
+				[Connection status]
+			</object>
+		</object>-->
+		
+		<object style="ModernLabelText" type="text" size="50%-128 -16 50%+128 16">
+			<translatableAttribute id="caption">Lan Lobby</translatableAttribute>
+		</object>
+
+		<object name="pageLanLobby" size="0 32 100% 100%">
+			<object name="playerNameLabel" type="text" size="20 10 125 40" style="ModernLabelText" text_align="right">
+				Player Name:
+			</object>
+			<object name="playerName" type="input" size="135 15 100%-40 39" style="ModernInput">
+				<action on="Load">
+					this.caption = Engine.ConfigDB_GetValue("user", "playername");
+				</action>
+			</object>
+		</object>
+		<object name="gamesBox" style="ModernList" type="olist" size="30 90 100%-30 100%-55">
+			
+			<action on="SelectionChange">updateGameSelection();</action>
+			
+			<def id="name" color="172 172 212" width="25%">
+				<translatableAttribute id="heading" context="lan-lobby">Name</translatableAttribute>
+			</def>
+			
+			<def id="mapName" color="192 192 192" width="25%">
+				<translatableAttribute id="heading" context="lan-lobby">Map Name</translatableAttribute>
+			</def>
+			
+			<def id="mapSize" color="192 192 192" width="20%">
+				<translatableAttribute id="heading" context="lan-lobby">Map Size</translatableAttribute>
+			</def>
+			
+			<def id="mapType" color="192 192 192" width="20%">
+				<translatableAttribute id="heading" context="lan-lobby">Map Type</translatableAttribute>
+			</def>
+			
+			<def id="nrPlayers" color="192 192 192" width="10%">
+				<translatableAttribute id="heading" context="lan-lobby">Players</translatableAttribute>
+			</def>
+			
+			<!--
+			<def id="name" heading="Name" color="0 60 0" width="25%"/>
+			<def id="mapName" heading="Map Name" color="128 128 128" width="25%"/>
+			<def id="mapSize" heading="Map Size" color="128 128 128" width="20%"/>
+			<def id="mapType" heading="Map Type" color="0 128 128" width="20%"/>
+			<def id="nPlayers" heading="Players" color="0 128 128" width="10%"/>-->
+		</object>
+		<object name="host" type="button" size="50%-56 100%-45 50%+56 100%-17" style="ModernButtonRed">
+			<translatableAttribute id="caption">Host</translatableAttribute>
+			<action on="Press">
+				stopLanDiscovery()
+				var playerName = Engine.GetGUIObjectByName("playerName").caption;
+				Engine.ConfigDB_CreateValue("user", "playername", playerName);
+				Engine.ConfigDB_WriteFile("user", "config/user.cfg");
+				startHost(playerName, playerName + "'s game");
+				/*if (startHost(playerName, playerName + "'s game"))
+						switchSetupPage("pageLanLobby", "pageConnecting");*/
+			</action>
+		</object>
+		<object name="connect" type="button" size="50%+76 100%-45 50%+188 100%-17" style="ModernButtonRed">
+			<translatableAttribute id="caption">Join</translatableAttribute>
+			<action on="Press">
+				stopLanDiscovery()
+				var playerName = Engine.GetGUIObjectByName("playerName").caption;
+				Engine.ConfigDB_CreateValue("user", "playername", playerName);
+				Engine.ConfigDB_WriteFile("user", "config/user.cfg");
+			</action>
+		</object>
+		<object name="cancel" type="button" size="50%-188 100%-45 50%-76 100%-17" style="ModernButtonRed" hotkey="cancel">
+			<translatableAttribute id="caption">Cancel</translatableAttribute>
+			<action on="Press">
+				stopLanDiscovery()
+				Engine.PopGuiPage();
+			</action>
+		</object>
+
+	</object>
+
+</objects>

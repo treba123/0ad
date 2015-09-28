@@ -282,11 +282,26 @@
 						Engine.PushGuiPage("page_gamesetup_mp.xml", { multiplayerGameType: "host" });
 					</action>
 				</object>
+				
+				<object name="subMenuMultiplayerLanButton"
+					type="button"
+					style="StoneButtonFancy"
+					size="0 64 100% 92"
+					tooltip_style="pgToolTip"
+					tooltip="Host or join a lan game."
+				>
+					Lan Game
+					<action on="Press">
+						closeMenu();
+						// Open Multiplayer connection window with host option.
+						Engine.PushGuiPage("page_lan_lobby.xml", []);
+					</action>
+				</object>
 
 				<object name="subMenuMultiplayerLobbyButton"
 					type="button"
 					style="StoneButtonFancy"
-					size="0 64 100% 92"
+					size="0 96 100% 124"
 					tooltip_style="pgToolTip"
 				>
 					<translatableAttribute id="caption">Game Lobby</translatableAttribute>
@@ -483,7 +498,7 @@
 					<translatableAttribute id="tooltip">Fight against one or more human players in a multiplayer game.</translatableAttribute>
 					<action on="Press">
 						closeMenu();
-						openMenu("submenuMultiplayer", (this.parent.size.top+this.size.top), (this.size.bottom-this.size.top), 3);
+						openMenu("submenuMultiplayer", (this.parent.size.top+this.size.top), (this.size.bottom-this.size.top), 4);
 					</action>
 				</object>
 
