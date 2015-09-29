@@ -2,9 +2,9 @@
 
 <objects>
 	<script file="gui/common/network.js"/>
-	<script file="gui/gamesetup/gamesetup_mp.js"/>
-	<script file="gui/common/functions_global_object.js"/>
 	<script file="gui/common/functions_utility.js"/>
+	<script file="gui/common/functions_global_object.js"/>
+	<script file="gui/gamesetup/gamesetup_mp.js"/>
 	<script file="gui/lan_lobby/lan_lobby.js"/>
 	
 
@@ -18,11 +18,11 @@
 			onTick();
 		</action>
 
-		<!--<object name="pageConnecting" hidden="true">
+		<!-- Hidden connection status object to avoid errors from gamesetup_mp.js -->
+		<object name="pageConnecting" hidden="true">
 			<object name="connectionStatus" type="text" text_align="center" size="0 100 100% 120">
-				[Connection status]
 			</object>
-		</object>-->
+		</object>
 		
 		<object style="ModernLabelText" type="text" size="50%-128 -16 50%+128 16">
 			<translatableAttribute id="caption">Lan Lobby</translatableAttribute>
