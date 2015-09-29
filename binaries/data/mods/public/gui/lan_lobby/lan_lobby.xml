@@ -13,6 +13,7 @@
 
 	<object name="dialog" type="image" style="ModernDialog" size="50%-400 50%-300 50%+400 50%+300">
 
+		<!-- This tick is regularly triggered by the engine -->
 		<action on="Tick">
 			getLanGames();
 			onTick();
@@ -62,12 +63,6 @@
 				<translatableAttribute id="heading" context="lan-lobby">Players</translatableAttribute>
 			</def>
 			
-			<!--
-			<def id="name" heading="Name" color="0 60 0" width="25%"/>
-			<def id="mapName" heading="Map Name" color="128 128 128" width="25%"/>
-			<def id="mapSize" heading="Map Size" color="128 128 128" width="20%"/>
-			<def id="mapType" heading="Map Type" color="0 128 128" width="20%"/>
-			<def id="nPlayers" heading="Players" color="0 128 128" width="10%"/>-->
 		</object>
 		<object name="host" type="button" size="50%-56 100%-45 50%+56 100%-17" style="ModernButtonRed">
 			<translatableAttribute id="caption">Host</translatableAttribute>
@@ -78,7 +73,7 @@
 				Engine.ConfigDB_WriteFile("user", "config/user.cfg");
 				startHost(playerName, playerName + "'s game");
 				/*if (startHost(playerName, playerName + "'s game"))
-						switchSetupPage("pageLanLobby", "pageConnecting");*/
+						switchSetupPage("pageLanLobby", "pageConnecting");		This is probably the real way to do it, shorly showing the connection box*/
 			</action>
 		</object>
 		<object name="connect" type="button" size="50%+76 100%-45 50%+188 100%-17" style="ModernButtonRed">
