@@ -16,6 +16,7 @@
  */
 
 #include "precompiled.h"
+//#include <string>
 #include "NetLanDiscovery.h"
 #include "lib/external_libraries/enet.h"
 #include "ps/CLogger.h"
@@ -42,7 +43,7 @@ LanDiscoverClient::LanDiscoverClient()
 	int err = pthread_create(&broadcastReplyThread, NULL, &RunThread, this);
 	if(err)
 	{
-		LOGERROR(L"Cannot create listener thread.\n");
+		LOGERROR("Cannot create listener thread.\n");
 	}
 }
 
@@ -51,7 +52,7 @@ LanDiscoverClient::~LanDiscoverClient()
 	shutdown = 1;
 	pthread_join(broadcastReplyThread,NULL);
 	if (socket) enet_socket_destroy(socket);
-	LOGERROR(L"Closed lan lobby");
+	LOGERROR("Closed lan lobby");
 }
 
 int LanDiscoverClient::SendBroadcast(){
@@ -64,14 +65,14 @@ int LanDiscoverClient::SendBroadcast(){
 	enet_socket_set_option(sendSocket, ENET_SOCKOPT_BROADCAST, 1);
 	
 	//broadcast
-	char* message = "Ping";
+	char message = 'p';
 	
 	ENetBuffer buf;
-	buf.data = message;
+	buf.data = &message;
 	buf.dataLength = sizeof(message);
 	
 	int err = enet_socket_send(sendSocket, &address, &buf, 1);
-	LOGERROR(L"Broadcast: %d\n",err);	
+	LOGERROR("Broadcast: %d\n",err);	
 	
 	enet_socket_destroy(sendSocket);
 
@@ -114,18 +115,18 @@ void LanDiscoverClient::ListenToBroadcastReplies()
 			//wcslen(GetState().c_str()) * sizeof(wchar_t)
 			
 			
-			LOGERROR(L"broadcast received message: %ls with length %d from ip: %ls",buffer,received,game.ip.c_str());
-			LOGERROR(L"Name: %ls len: %d",game.name.c_str(),wcslen(buffer));
-			LOGERROR(L"State: %ls len %d",game.state.c_str(),wcslen(&buffer[wcslen(buffer)+1]));
+			//LOGERROR("broadcast received message: %ls with length %d from ip: %ls",buffer,received,game.ip.c_str());
+			//LOGERROR("Name: %ls len: %d",game.name.c_str(),wcslen(buffer));
+			//LOGERROR("State: %ls len %d",game.state.c_str(),wcslen(&buffer[wcslen(buffer)+1]));
 		}
 		else if(received < 0){
-			LOGERROR(L"Net server: could not receive from port");
+			LOGERROR("Net server: could not receive from port");
 		}
 		usleep(50000);
 	}
 }
 
-CScriptValRooted LanDiscoverClient::GetGameList(ScriptInterface& scriptInterface)
+/*CScriptValRooted LanDiscoverClient::GetGameList(ScriptInterface& scriptInterface)
 {
 	CScriptValRooted resGameList;
 	scriptInterface.Eval("([])", resGameList);
@@ -143,7 +144,7 @@ CScriptValRooted LanDiscoverClient::GetGameList(ScriptInterface& scriptInterface
 	}
 
 	return resGameList;
-}
+}*/
 
 /*CScriptValRooted LanDiscoverClient::GetGameList(ScriptInterface& scriptInterface)
 {

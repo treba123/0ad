@@ -35,7 +35,7 @@ public:
 	virtual ~LanDiscoverClient();
 
 	int SendBroadcast();
-	CScriptValRooted GetGameList(ScriptInterface&);
+	/*CScriptValRooted GetGameList(ScriptInterface&);*/
 	
 	
 private:
