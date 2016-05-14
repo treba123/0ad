@@ -38,6 +38,7 @@
 #include "network/NetClient.h"
 #include "network/NetServer.h"
 #include "network/NetTurnManager.h"
+#include "network/NetLanDiscovery.h"
 #include "ps/CConsole.h"
 #include "ps/CLogger.h"
 #include "ps/Errors.h"
@@ -351,6 +352,43 @@ void DisconnectNetworkGame(ScriptInterface::CxPrivate* UNUSED(pCxPrivate))
 	SAFE_DELETE(g_NetServer);
 	SAFE_DELETE(g_NetClient);
 	SAFE_DELETE(g_Game);
+}
+
+void StartLanGameDiscoveryServer(ScriptInterface::CxPrivate* UNUSED(pCxPrivate))
+{
+	ENSURE(!LanDiscoveryServerIntstance);
+	LanDiscoveryServerIntstance = new LanDiscoverServer();
+}
+
+void StopLanGameDiscoveryServer(ScriptInterface::CxPrivate* UNUSED(pCxPrivate))
+{
+	ENSURE(LanDiscoveryServerIntstance);
+	SAFE_DELETE(LanDiscoveryServerIntstance);
+}
+
+void StartLanGameDiscoveryClient(ScriptInterface::CxPrivate* UNUSED(pCxPrivate))
+{
+	ENSURE(!LanDiscoveryClientIntstance);
+	LanDiscoveryClientIntstance = new LanDiscoverClient();
+}
+
+void SendLanGameDiscoveryBroadcast(ScriptInterface::CxPrivate* UNUSED(pCxPrivate))
+{
+	ENSURE(LanDiscoveryClientIntstance);
+	LanDiscoveryClientIntstance->SendBroadcast();
+}
+
+/*JS::Value GetLanDiscoveryGameList(ScriptInterface::CxPrivate* pCxPrivate)
+{
+	ENSURE(DiscoverClient);
+	JS::Value gameList = DiscoverClient->GetGameList(*(pCxPrivate->pScriptInterface));
+	return gameList.get();
+}*/
+
+void StopLanGameDiscoveryClient(ScriptInterface::CxPrivate* UNUSED(pCxPrivate))
+{
+	ENSURE(LanDiscoveryClientIntstance);
+	SAFE_DELETE(LanDiscoveryClientIntstance);
 }
 
 JS::Value PollNetworkClient(ScriptInterface::CxPrivate* pCxPrivate)

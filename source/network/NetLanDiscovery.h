@@ -27,12 +27,29 @@ typedef struct Game {
    CStrW players;
 } Game;
 
-class LanDiscoverClient
+class LanDiscoveryServer
 {
-	NONCOPYABLE(LanDiscoverClient);
+	NONCOPYABLE(LanDiscoveryServerIntstance);
 public:
-	LanDiscoverClient();
-	virtual ~LanDiscoverClient();
+	LanDiscoveryServer();
+	virtual ~LanDiscoveryServer();
+	
+private:
+	
+	int socket;
+	int shutdown;
+	pthread_t broadcastListenerThread;
+	
+	static void* RunThread(void*);
+	void ListenToBroadcast();
+};
+
+class LanDiscoveryClient
+{
+	NONCOPYABLE(LanDiscoveryClient);
+public:
+	LanDiscoveryClient();
+	virtual ~LanDiscoveryClient();
 
 	int SendBroadcast();
 	/*CScriptValRooted GetGameList(ScriptInterface&);*/
@@ -49,4 +66,5 @@ private:
 	void ListenToBroadcastReplies();
 };
 
-extern LanDiscoverClient *DiscoverClient;
+extern LanDiscoveryServer *LanDiscoveryServerIntstance;
+extern LanDiscoveryClient *LanDiscoveryClientIntstance;

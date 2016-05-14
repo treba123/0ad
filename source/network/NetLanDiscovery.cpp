@@ -16,7 +16,6 @@
  */
 
 #include "precompiled.h"
-//#include <string>
 #include "NetLanDiscovery.h"
 #include "lib/external_libraries/enet.h"
 #include "ps/CLogger.h"
@@ -25,13 +24,79 @@
 #define PS_BROADCAST_PORT				0x5070
 #define PS_BROADCAST_PORT2				0x5071
 
-LanDiscoverClient *DiscoverClient = NULL;
+LanDiscoveryServer *LanDiscoveryServerInstance = NULL;
 
-LanDiscoverClient::LanDiscoverClient()
+LanDiscoveryServer::LanDiscoveryServer()
 {
 	ENetAddress address;
 	address.host = ENET_HOST_ANY;
-	address.port = PS_BROADCAST_PORT2;
+	address.port = PS_BROADCAST_PORT;
+	
+	socket = enet_socket_create(ENET_SOCKET_TYPE_DATAGRAM);
+	enet_socket_set_option(socket, ENET_SOCKOPT_REUSEADDR, 1);
+	enet_socket_set_option(socket, ENET_SOCKOPT_NONBLOCK, 1);
+	enet_socket_bind(socket, &address);
+	
+	shutdown = 0;
+	
+	int err = pthread_create(&broadcastListenerThread, NULL, &RunThread, this);
+	if(err)
+	{
+		LOGERROR("Cannot create listener thread.\n");
+	}
+}
+
+LanDiscoveryServer::~LanDiscoveryServer()
+{
+	shutdown = 1;
+	pthread_join(broadcastReplyThread,NULL);
+	if (socket) enet_socket_destroy(socket);
+	LOGERROR("Closed lan lobby");
+}
+
+void* LanDiscoveryServer::RunThread(void* data)
+{
+	debug_SetThreadName("LanDiscoveryServerListenerThread");
+
+	static_cast<LanDiscoveryServer*>(data)->ListenToBroadcast();
+
+	return NULL;
+}
+
+void LanDiscoveryServer::ListenToBroadcast()
+{
+	ENetAddress address;
+	ENetBuffer buf;
+	wchar_t buffer[1000];
+	buf.data = buffer;
+	buf.dataLength = sizeof(buffer);
+	
+	while (!shutdown)
+	{
+		int received = enet_socket_receive(socket, &address, &buf, 1);
+		if(received)
+		{	
+			char ip[15];
+			enet_address_get_host_ip(&address,ip,15);
+			
+		}
+		else if(received < 0){
+			LOGERROR("Net server: could not receive from port");
+		}
+		usleep(50000);
+	}
+}
+
+LanDiscoveryClient *LanDiscoveryClientIntstance = NULL;
+
+LanDiscoveryClient::LanDiscoveryClient()
+{
+	
+	//Hier muss ein normaler enet listener hin, der auf antworten wartet. Sollte aber auch in den thread rein gehen
+	
+	ENetAddress address;
+	address.host = ENET_HOST_ANY;
+	address.port = PS_BROADCAST_PORT;
 	
 	socket = enet_socket_create(ENET_SOCKET_TYPE_DATAGRAM);
 	enet_socket_set_option(socket, ENET_SOCKOPT_REUSEADDR, 1);
@@ -47,7 +112,7 @@ LanDiscoverClient::LanDiscoverClient()
 	}
 }
 
-LanDiscoverClient::~LanDiscoverClient()
+LanDiscoveryClient::~LanDiscoveryClient()
 {
 	shutdown = 1;
 	pthread_join(broadcastReplyThread,NULL);
@@ -55,7 +120,7 @@ LanDiscoverClient::~LanDiscoverClient()
 	LOGERROR("Closed lan lobby");
 }
 
-int LanDiscoverClient::SendBroadcast(){
+int LanDiscoveryClient::SendBroadcast(){
 	
 	ENetAddress address;
 	address.host = ENET_HOST_BROADCAST;
@@ -79,7 +144,7 @@ int LanDiscoverClient::SendBroadcast(){
 	return err;
 }
 
-void* LanDiscoverClient::RunThread(void* data)
+void* LanDiscoveryClient::RunThread(void* data)
 {
 	debug_SetThreadName("LanDiscoverListenerThread");
 
@@ -88,7 +153,7 @@ void* LanDiscoverClient::RunThread(void* data)
 	return NULL;
 }
 
-void LanDiscoverClient::ListenToBroadcastReplies()
+void LanDiscoveryClient::ListenToBroadcastReplies()
 {
 	ENetAddress address;
 	ENetBuffer buf;
